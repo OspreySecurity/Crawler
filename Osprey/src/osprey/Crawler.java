@@ -7,10 +7,7 @@
 package osprey;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,44 +18,49 @@ import org.jsoup.select.Elements;
  *
  * @author willdech
  */
-public class Crawler {
+public final class Crawler {
     private final String url;
-    private final List report = new ArrayList();
     private Document html;
     
     public Crawler(String url){
         this.url = url;
-    }
-    
-    public void run(){
-        if (this.getWebpage()){
-            this.listAllTags();
+        if (!this.getWebpage()){
+            System.out.println("Webpage Unavailable");
         }
     }
     
-    public void listAllTags(){
-        Map<String, String> map = new HashMap<>();
-        List elelist = new ArrayList();
-        Elements eles = this.html.getAllElements();
+    /**
+     * CSS query to select elements
+     * @param query
+     * @return 
+     */
+    public Elements query(String query){
+        // Example "class=header && tag=a"
+        return this.html.select(query);
+    }
+    
+    public Map adaIssues(){  
+        // Check for alt tags on Images
+        Map noAlts = noAlts();
+        return noAlts;
+    }
+    
+    public Map noAlts(){
+        Elements eles = query("img");
+        Map map = new HashMap();
         for (Element ele : eles){
-            if (!map.containsKey(ele.nodeName())){
-                map.put(ele.nodeName(), "1");
-                elelist.add(ele.nodeName());
-            }
-            else{
-                int count = Integer.parseInt(map.get(ele.nodeName()));
-                map.put(ele.nodeName(), ++count + "");
+            if (!ele.hasAttr("alt")){                
+                map.put("No Alt Tag", ele.toString());
             }
         }
-        Collections.sort(elelist.subList(1, elelist.size()));
-        this.addToReport("Html Tag Count: ");
-        int len = map.size();
-        while (len-- != 0){
-            String e = (String) elelist.get(len);
-            this.addToReport(e + ": " + map.get(e));
-        }
+        
+        return map;
     }
     
+    /**
+     * Get the webpage as an HTML document
+     * @return 
+     */
     public boolean getWebpage(){
         try {
             this.html = Jsoup.connect(url).get();
@@ -66,13 +68,5 @@ public class Crawler {
             return false;
         }
         return true;
-    }
-    
-    public List generateReport(){
-        return this.report;
-    }
-    
-    public void addToReport(String msg){
-        this.report.add(msg);
     }
 }

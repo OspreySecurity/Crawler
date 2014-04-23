@@ -6,8 +6,6 @@
 
 package osprey;
 
-import java.util.List;
-
 /**
  *
  * @author willdech
@@ -19,12 +17,6 @@ public class Osprey {
      */
     public static void main(String[] args) {
         Crawler c = new Crawler("https://www.byui.edu");
-        c.run();
-        List report = c.generateReport();
-        int len = report.size();
-        int count = 0;
-        while(count != len - 1){
-            System.out.println(report.get(count++));
-        }
+        System.out.println(c.adaIssues());
     }
 }
