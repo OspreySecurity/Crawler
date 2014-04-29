@@ -22,13 +22,34 @@ public class Spider {
     private final Document report;
     
     public Spider(String url) throws IOException{
-        this.baseurl = url;
-        this.html = Jsoup.connect(baseurl).get();
-        this.report = Jsoup.parse("<html><body></body></html>");
+        this.report = Jsoup.parse("<html><body></body></html>"); 
+        if (!url.isEmpty()){
+            this.baseurl = url;
+            this.html = Jsoup.connect(baseurl).get();                      
+        }
+        else{
+            this.baseurl = "";
+            this.html = null;
+        }
     }
     
-    public Elements query(String query){
+    public String formatUrl(String url){
+        if (!url.contains("http://")){
+            url = "http://" + url;
+        }
+        if (!url.contains("www.")){
+            String[] split = url.split("//");
+            url = split[0] + "//" + "www." + split[1];
+        }
+        return url;
+    }
+    
+    public Elements cssQuery(String query){
         return this.html.select(query);
+    }
+    
+    public Elements queryText(String query){
+        return this.html.getElementsContainingOwnText(query);
     }
     
     public void ada(){
@@ -46,7 +67,7 @@ public class Spider {
     }
         
     public void adaAltAttr(){        
-        Elements alts = query("img:not([alt]):not([alt='']), video:not([alt]):not([alt='']), audio:not([alt]):not([alt='']), area:not([alt]):not([alt=''])");
+        Elements alts = cssQuery("img:not([alt]):not([alt='']), video:not([alt]):not([alt='']), audio:not([alt]):not([alt='']), area:not([alt]):not([alt=''])");
         adaAddToReport(alts);        
     }
     

@@ -38,11 +38,11 @@ public class OspreyGUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         display = new javax.swing.JTextArea();
         query = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
         website = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         stats = new javax.swing.JTextArea();
+        queryType = new javax.swing.JComboBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -72,8 +72,6 @@ public class OspreyGUI extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("CSS Query:");
-
         website.setToolTipText("");
         website.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -86,6 +84,14 @@ public class OspreyGUI extends javax.swing.JFrame {
         stats.setColumns(20);
         stats.setRows(5);
         jScrollPane2.setViewportView(stats);
+
+        queryType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CSS Selector", "Text" }));
+        queryType.setToolTipText("");
+        queryType.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                queryTypeActionPerformed(evt);
+            }
+        });
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
@@ -105,14 +111,14 @@ public class OspreyGUI extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2))
+                            .addComponent(jLabel2)
+                            .addComponent(queryType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(query, javax.swing.GroupLayout.DEFAULT_SIZE, 318, Short.MAX_VALUE)
                             .addComponent(website))
                         .addGap(39, 39, 39)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -126,8 +132,8 @@ public class OspreyGUI extends javax.swing.JFrame {
                             .addComponent(jLabel2))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(query, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(query, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(queryType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
@@ -160,19 +166,26 @@ public class OspreyGUI extends javax.swing.JFrame {
                 website.setEnabled(false);
                 setStats("Website Loaded");
                 query.requestFocus();
-            } catch (IOException ex) {
+            } catch (IOException ex) {                
                 Logger.getLogger(OspreyGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_websiteKeyPressed
-
+    
     private void queryKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_queryKeyReleased
         // TODO add your handling code here:
         String text = "";
         String stat = "";
         text = query.getText();
+        String type = queryType.getSelectedItem().toString().toLowerCase();
         if (!text.isEmpty()){
-            Elements eles = spider.query(query.getText());
+            Elements eles = null;
+            if (type.contains("css")){
+                eles = spider.cssQuery(text);
+            }
+            else if (type.contains("text")){
+                eles = spider.queryText(text);
+            }
             stat += "Total Elements: " + eles.size();
             String d = "";
             for (Element ele : eles){
@@ -182,6 +195,10 @@ public class OspreyGUI extends javax.swing.JFrame {
         }        
         setStats(stat);
     }//GEN-LAST:event_queryKeyReleased
+
+    private void queryTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_queryTypeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_queryTypeActionPerformed
 
     public void setStats(String text){
         stats.setText(text);
@@ -218,7 +235,6 @@ public class OspreyGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea display;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -226,6 +242,7 @@ public class OspreyGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField query;
+    private javax.swing.JComboBox queryType;
     private javax.swing.JTextArea stats;
     private javax.swing.JTextField website;
     // End of variables declaration//GEN-END:variables
