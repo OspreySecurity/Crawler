@@ -18,9 +18,8 @@ public class Test {
     public static void main(String[] args){
         try {
             Robots r = new Robots("http://davidwalsh.name/");
-            r.getCrawlableWebpages().stream().forEach((page) -> {
-                System.out.println(page);
-            });
+            //Robots r = new Robots("https://google.com");
+            System.out.println(r.getFileLocation());
         } catch (IOException ex) {
             Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
         }
