@@ -1,7 +1,4 @@
-Crawler
+GPUCrawler
 =======
 
-Included is the following classes and objects:
-
-Osprey - The test class
-Crawler - Generating a crawler report
+This crawler takes advantage of Cuda cores on a gpu in order to crawl upwards of 300 websites simultaniously.
