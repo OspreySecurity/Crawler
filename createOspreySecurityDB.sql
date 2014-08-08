@@ -13,8 +13,8 @@ USE `OspreySecurity`;
 -- Table structure for table `Domain`
 --
 
-DROP TABLE IF EXISTS `Domain`;
-CREATE TABLE `Domain` (
+DROP TABLE IF EXISTS `domain`;
+CREATE TABLE `domain` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `domain_name` varchar(40) NOT NULL,
   `crawl` tinyint(1) NOT NULL DEFAULT '1',
