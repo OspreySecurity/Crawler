@@ -5,8 +5,12 @@
  */
 package PiCrawler;
 
+import java.io.*;
+import java.net.URISyntaxException;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class gets 10 URLs at a time and returns them when called.
@@ -35,6 +39,33 @@ public class URLHandler{
     *
     */
    public void fill() {
+      try {
+         File file = new File(getClass().getResource("websites.txt").toURI());
+         BufferedReader reader = new BufferedReader(new FileReader(file));
+         String url = null;
+         int errorCount = 0;
+         
+         while(URLs.size() < size) {
+            url = reader.readLine();
+            if(url == null) {
+               errorCount++;
+               
+               if(errorCount > 10) {
+                  System.out.println(errorCount + " errors reading in URLs (URLHandler line:49)");
+               }
+               
+               continue;
+            }
+            URLs.add(url);
+         }
+         
+      } catch (URISyntaxException ex) {
+         Logger.getLogger(URLHandler.class.getName()).log(Level.SEVERE, null, ex);
+      } catch (FileNotFoundException ex) {
+         Logger.getLogger(URLHandler.class.getName()).log(Level.SEVERE, null, ex);
+      } catch (IOException ex) {
+         Logger.getLogger(URLHandler.class.getName()).log(Level.SEVERE, null, ex);
+      }
       
    }
    
@@ -43,7 +74,7 @@ public class URLHandler{
     * @return
     */
    public String getNext() {
-      return null;
+      return URLs.poll();
       
    }
    
@@ -52,7 +83,7 @@ public class URLHandler{
     * @return
     */
    public String peekNext() {
-      return null;
+      return URLs.peek();
       
    }
    
