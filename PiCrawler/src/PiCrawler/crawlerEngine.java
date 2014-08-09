@@ -78,7 +78,8 @@ public class crawlerEngine {
       System.out.println("");
       
       for(Report report : reports) {
-         report.printReport();
+         report.writeReport();
+//         report.printReport();
       }
       
       System.out.println("");
