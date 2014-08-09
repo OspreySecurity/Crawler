@@ -18,7 +18,7 @@ CREATE TABLE `domain` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `domain_name` varchar(40) NOT NULL,
   `crawl` tinyint(1) NOT NULL DEFAULT '1',
-  `score` tinyint(3) unsigned NOT NULL,
+  `score` tinyint(3) unsigned,
   `times_visited` int(10) unsigned NOT NULL DEFAULT '0',
   `created_on` date NOT NULL,
   `last_crawled_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
