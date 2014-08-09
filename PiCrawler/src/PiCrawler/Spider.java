@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import standards.*;
 
 /**
  *
@@ -21,6 +22,7 @@ import org.jsoup.nodes.Document;
 public class Spider {
 
    Spider(crawlerEngine engine) {
+      report = new Report();
    }
 
    /**
@@ -30,33 +32,45 @@ public class Spider {
    public Boolean crawl(String domainName) {
       assert (domainName != null);
 
-      Report report = new Report();
-
       try {
          Date pre = new Date();
-         DOM = Jsoup.connect(domainName).timeout(10 * 1000).get();
+         Document DOM = Jsoup.connect(domainName).timeout(10 * 1000).get();
          Date post = new Date();
-         
+
          URL url = new URL(domainName);
          url.openConnection();
 
          domainName = url.getHost();
 
          report.add("Domain Name", domainName);
-         report.add("Download Time", Double.toString(getDownloadTime(pre, post)));
+         report.
+                 add("Download Time", Double.
+                         toString(getDownloadTime(pre, post)));
          report.add("Default port", Integer.toString(url.getDefaultPort()));
          report.add("Host Name", url.getHost());
          report.add("Protocol", url.getProtocol());
-         
-         
+
+         DomainHttps https = new DomainHttps(DOM);
+         LoginForm login = new LoginForm(DOM);
+         CheckHttps checkHttps = new CheckHttps(DOM);
+         CheckPassUrl checkPassUrl = new CheckPassUrl(DOM);
+         addSites adder = new addSites(DOM);
+         HeaderParser parser = new HeaderParser(DOM);
+
+         // eventually we will make these dynamically loaded, then this will be epic
+         report.add(https.test());
+         report.add(checkHttps.test());
+         report.add(checkPassUrl.test());
+         if (login.hasLoginForm())
+            report.add(login.test());
+
+         report.add(parser.test());
 
       } catch (MalformedURLException ex) {
          System.out.println("Heres the bad url : " + domainName);
          Logger.getLogger(Spider.class.getName()).log(Level.SEVERE, null, ex);
-//            engine.addSpider();
       } catch (IOException ex) {
          Logger.getLogger(Spider.class.getName()).log(Level.SEVERE, null, ex);
-//            engine.addSpider();
       }
       return null;
    }
@@ -69,29 +83,10 @@ public class Spider {
       return (post.getTime() - pre.getTime()) / 1000.0;
    }
 
-   /**
-    *
-    * @return
-    */
-   public double getDownloadTime() {
-      return downloadTime;
+   public Report getReport() {
+      return report;
    }
 
-   /**
-    *
-    * @return
-    */
-   public Document getDom() {
-      return DOM;
-   }
+   private Report report;
 
-   /**
-    * The Site to be crawled
-    */
-   protected Document DOM;
-
-   /**
-    * The time it takes to crawl
-    */
-   protected double downloadTime;
 }

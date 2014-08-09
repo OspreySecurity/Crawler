@@ -24,7 +24,7 @@ import org.jsoup.select.Elements;
  */
 public class addSites {
 
-   public addSites() {
+   public addSites(Document doc) {
 
    }
 

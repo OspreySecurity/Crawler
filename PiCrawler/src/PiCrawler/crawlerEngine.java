@@ -16,9 +16,12 @@ public class crawlerEngine {
 
    public crawlerEngine() {
       
-      adder = new addSites();
+//      adder = new addSites();
       spider = new Spider(this);
       handler = new URLHandler();
+      
+      maxReportsSize = 5;
+      totalReports = 0;
       
       reports = new HashSet();
    }
@@ -43,6 +46,21 @@ public class crawlerEngine {
          }
          
          crawled = spider.crawl(site);
+         reports.add(spider.getReport());
+         
+         if (reports.size() >= maxReportsSize) {
+            //Write to the database
+            
+            
+            //using reports.size() would be more accurate, but this is faster
+            totalReports += maxReportsSize;
+            
+            //clear out all the reports to start over
+            reports.clear();
+         }
+         
+         
+         
          
          
          
@@ -67,9 +85,12 @@ public class crawlerEngine {
       engine.run();
    }
 
-   private final addSites adder;
+//   private final addSites adder;
    private final Spider spider;
    private final URLHandler handler;
+   
+   private final int maxReportsSize;
+   private int totalReports;
    
 //  private crawlerEngine engine;
    private final Set<Report> reports;
