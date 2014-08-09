@@ -10,3 +10,5 @@ Crawler - Generating a crawler report
 VarCrawler - a web crawler that is able to moniter and fluctuate the number of cores based on load
 
 GPUCrawler - a crawler that takes advantage of GPU computing
+
+PiCrawler - a crawler that can be run on a Raspberry Pi
