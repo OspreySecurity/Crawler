@@ -18,7 +18,7 @@ public class crawlerEngine {
       
 //      adder = new addSites();
       spider = new Spider(this);
-      handler = new URLHandler();
+      handler = new URLHandler(10);
       
       maxReportsSize = 5;
       totalReports = 0;
