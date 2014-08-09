@@ -14,9 +14,10 @@ import java.util.logging.Logger;
 
 /**
  * This class gets 10 URLs at a time and returns them when called.
+ *
  * @author Jared
  */
-public class URLHandler{
+public class URLHandler {
 
    /**
     *
@@ -25,7 +26,7 @@ public class URLHandler{
       size = 10;
       URLs = new ArrayBlockingQueue<String>(size);
    }
-   
+
    /**
     *
     * @param pSize
@@ -34,59 +35,77 @@ public class URLHandler{
       size = pSize;
       URLs = new ArrayBlockingQueue<String>(size);
    }
-   
+
    /**
     *
     */
    public void fill() {
       try {
+         System.out.println("");
+         System.out.println("=============================================");
+         System.out.println("***** Stared Filling the Handler *****");
+         System.out.println("=============================================");
+         System.out.println("");
+
          File file = new File(getClass().getResource("websites.txt").toURI());
          BufferedReader reader = new BufferedReader(new FileReader(file));
          String url = null;
          int errorCount = 0;
-         
-         while(URLs.size() < size) {
+
+         while (URLs.size() < size) {
             url = reader.readLine();
-            if(url == null) {
+            if (url == null) {
                errorCount++;
-               
-               if(errorCount > 10) {
-                  System.out.println(errorCount + " errors reading in URLs (URLHandler line:49)");
-               }
-               
+
+               if (errorCount > 10)
+                  System.out.println(errorCount
+                                     + " errors reading in URLs (URLHandler line:49)");
+
                continue;
             }
+            
+            System.out.println("* Added " + url);
+            
             URLs.add(url);
          }
-         
+
       } catch (URISyntaxException ex) {
-         Logger.getLogger(URLHandler.class.getName()).log(Level.SEVERE, null, ex);
+         Logger.getLogger(URLHandler.class.getName()).
+                 log(Level.SEVERE, null, ex);
       } catch (FileNotFoundException ex) {
-         Logger.getLogger(URLHandler.class.getName()).log(Level.SEVERE, null, ex);
+         Logger.getLogger(URLHandler.class.getName()).
+                 log(Level.SEVERE, null, ex);
       } catch (IOException ex) {
-         Logger.getLogger(URLHandler.class.getName()).log(Level.SEVERE, null, ex);
+         Logger.getLogger(URLHandler.class.getName()).
+                 log(Level.SEVERE, null, ex);
       }
-      
+
+      System.out.println("");
+      System.out.println("=============================================");
+      System.out.println("***** Finished Filling the Handler *****");
+      System.out.println("=============================================");
+      System.out.println("");
+
    }
-   
+
    /**
     *
     * @return
     */
    public String getNext() {
       return URLs.poll();
-      
+
    }
-   
+
    /**
     *
     * @return
     */
    public String peekNext() {
       return URLs.peek();
-      
+
    }
-   
+
    /**
     *
     * @return URLs.size
@@ -94,9 +113,9 @@ public class URLHandler{
    public int count() {
       return URLs.size();
    }
-   
+
    private final Queue<String> URLs;
-   
+
    private final int size;
 
 }

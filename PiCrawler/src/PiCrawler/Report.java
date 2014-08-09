@@ -46,7 +46,7 @@ public class Report {
     * the database
     */
    public synchronized void printReport() {
-      String header = "Webpage Crawled";
+      String header = "Domain Name";
       String page = report.get(header);
       report.remove(header);
       page = header + " : " + page;

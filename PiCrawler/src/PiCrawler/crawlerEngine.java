@@ -31,6 +31,12 @@ public class crawlerEngine {
     */
    public void run() {
 
+      System.out.println("=============================================");
+      System.out.println("***** Started PiCrawler, Welcome Back! *****");
+      System.out.println("=============================================");
+      System.out.println("");
+      
+      
       String site;
       Boolean crawled = false;
       
@@ -39,6 +45,9 @@ public class crawlerEngine {
       
       //It would be nice if we could stop this somehow
       while(true) {
+         
+         System.out.println(">>>>> Reports size = " + reports.size());
+         
          site = handler.getNext();
          if(site == null) {
             handler.fill();
@@ -50,7 +59,7 @@ public class crawlerEngine {
          
          if (reports.size() >= maxReportsSize) {
             //Write to the database
-            
+            report();
             
             //using reports.size() would be more accurate, but this is faster
             totalReports += maxReportsSize;
@@ -58,13 +67,26 @@ public class crawlerEngine {
             //clear out all the reports to start over
             reports.clear();
          }
-         
-         
-         
-         
-         
-         
       }
+   }
+   
+   private void report() {
+      System.out.println("");
+      System.out.println("=============================================");
+      System.out.println("***** Started Printing Reports *****");
+      System.out.println("=============================================");
+      System.out.println("");
+      
+      for(Report report : reports) {
+         report.printReport();
+      }
+      
+      System.out.println("");
+      System.out.println("=============================================");
+      System.out.println("***** Finished Printing Reports *****");
+      System.out.println("***** Total number of reports: " + totalReports + " *****");
+      System.out.println("=============================================");
+      System.out.println("");
    }
    
    /*
