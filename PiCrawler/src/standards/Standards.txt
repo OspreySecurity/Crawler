@@ -1,0 +1,13 @@
+The standards package holds all test cases. Each test merely "runs and reports",
+since the Report class in PiCrawler takes care of calculating the score of each
+domain. 
+
+standards:
+  Standard - Base class
+  CSS - 
+  CheckHttps - 
+  CheckPassUrl - 
+  Cookies - 
+  DomainHttps - 
+  HeaderParser -
+  LoginForm -
