@@ -22,6 +22,7 @@ import standards.*;
 public class Spider {
 
    Spider(crawlerEngine engine) {
+      adder = new addSites();
    }
 
    /**
@@ -43,6 +44,9 @@ public class Spider {
          Date pre = new Date();
          Document DOM = Jsoup.connect(domainName).timeout(10 * 1000).get();
          Date post = new Date();
+         
+         //Add new sites to database
+         adder.write(DOM);
 
          System.out.println("* Connected via JSOUP");
 
@@ -109,5 +113,7 @@ public class Spider {
    }
 
    private Report report;
+   private final addSites adder;
+   
 
 }

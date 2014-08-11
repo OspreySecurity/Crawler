@@ -79,7 +79,7 @@ public class Report {
          conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
          //STEP 4: Execute a query
-         System.out.println("Creating insert statement...");
+//         System.out.println("Creating insert statement...");
          stmt = conn.createStatement();
          String sql;
 
@@ -87,29 +87,32 @@ public class Report {
          String page = report.get(header);
          report.remove(header);
 
-         System.out.println("domain_name should be: " + page);
-         
+//         System.out.println("domain_name should be: " + page);
          if (page == null)
             return;
 
-         sql = "INSERT INTO domain(domain_name, crawl, created_on) "
-               + "VALUES ('" + page + "', 1, SYSDATE())";
-
-         stmt.executeUpdate(sql);
-
+//         sql = "INSERT INTO domain(domain_name, crawl, created_on) "
+//               + "VALUES ('" + page + "', 1, SYSDATE())";
+//         stmt.executeUpdate(sql);
          System.out.println("Creating select statement...");
 
-         sql = "SELECT domain_name FROM domain";
+         sql = "SELECT id FROM domain WHERE domain_name='" + page + "'";
          ResultSet rs = stmt.executeQuery(sql);
 
-         //STEP 5: Extract data from result set
-         while (rs.next()) {
-            //Retrieve by column name
-            String domain_name = rs.getString("domain_name");
+         rs.next();
+         int id = rs.getInt("id");
 
-            //Display values
-            System.out.println("domain_name: " + domain_name);
+         Set<String> keys = report.keySet();
+
+         for (String str : keys) {
+
+            sql = "REPLACE INTO info(domain_id, header_field, value, created_on)"
+                  + "VALUES (" + id + ", " + str +", " + report.get(str) + 
+                  ", SYSDATE())";
+            
+            stmt.executeUpdate(sql);
          }
+
          //STEP 6: Clean-up environment
          rs.close();
          stmt.close();

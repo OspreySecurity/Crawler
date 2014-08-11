@@ -5,11 +5,10 @@
  */
 package PiCrawler;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -24,18 +23,71 @@ import org.jsoup.select.Elements;
  */
 public class addSites {
 
-   public addSites(Document doc) {
+   public addSites() {
 
    }
 
+   private void add(Set<String> pages) {
+//      Connection conn = null;
+//      Statement stmt = null;
+
+      System.out.println("");
+      System.out.println("=============================================");
+      System.out.println("***** Started Adding Sites *****");
+      System.out.println("=============================================");
+      System.out.println("");
+
+      try {
+         //STEP 2: Register JDBC driver
+         Class.forName("com.mysql.jdbc.Driver");
+
+         //STEP 3: Open a connection
+         System.out.println("Connecting to database...");
+         Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+         //STEP 4: Execute a query
+         System.out.println("Creating insert statement...");
+         Statement stmt = conn.createStatement();
+         String sql;
+
+         for (String page : pages) {
+
+            if (page == null)
+               continue;
+
+            System.out.println("* adding page: " + page);
+
+            sql = "INSERT INTO domain(domain_name, crawl, created_on) "
+                  + "VALUES ('" + page + "', 1, SYSDATE())";
+
+//            try {
+               stmt.executeUpdate(sql);
+               System.out.println("* Wrote: " + page + " to the database");
+               
+//            } catch (SQLException ex) {
+//               System.out.println("* Couldn't add " + page);
+//            }
+         }
+
+      } catch (ClassNotFoundException | SQLException ex) {
+         Logger.getLogger(addSites.class.getName()).log(Level.SEVERE, null, ex);
+      }
+
+      System.out.println("");
+      System.out.println("=============================================");
+      System.out.println("***** Finished Adding Sites *****");
+      System.out.println("=============================================");
+      System.out.println("");
+   }
+
    public void write(Document doc) {
-      DOM = doc;
+      Document DOM = doc;
       Set<String> newSites = new HashSet<String>();
       String[] parts;
       String linkHref;
       String middle;
 
-      Elements href = this.DOM.getElementsByAttribute("href");
+      Elements href = DOM.getElementsByAttribute("href");
 
       for (Element link : href) {
          linkHref = link.attr("href");
@@ -50,37 +102,16 @@ public class addSites {
          }
       }
 
-      BufferedWriter writer = null;
+      add(newSites);
 
-      try {
-         File file = new File(getClass().getResource("websites.txt").toURI());
-         writer = new BufferedWriter(new FileWriter(file, true));
-
-//         System.out.println("\n");
-         //ArrayList<String> parts = new ArrayList<String>();
-         for (String site : newSites) {
-//        System.out.println("Writeing " + site + " to file: " + getClass().
-//                getResource("websites.txt").toURI());
-            if (site.contains("imprintedstudios.com"))
-               continue;
-
-            if (site.contains("http")) {
-               writer.write(site);
-               writer.newLine();
-//               System.out.println("Wrote : " + site);
-            }
-         }
-      } catch (IOException | URISyntaxException ex) {
-         Logger.getLogger(addSites.class.getName()).log(Level.SEVERE, null, ex);
-      } finally {
-         try {
-            writer.close();
-         } catch (IOException ex) {
-            Logger.getLogger(addSites.class.getName()).log(Level.SEVERE, null,
-                                                           ex);
-         }
-      }
    }
 
-   protected Document DOM;
+   // JDBC driver name and database URL
+   static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+   static final String DB_URL = "jdbc:mysql://localhost/OspreySecurity";
+
+   //  Database credentials
+   static final String USER = "OspreySecurity";
+   static final String PASS = "osprey";
+
 }
