@@ -67,9 +67,31 @@ public class Report {
 
    }
 
+   private String removeQuotes(String str) {
+      str = str.replace("\"", "");
+      str = str.replace("\'", "");
+      
+      return str;
+   }
+   
+   private String removeColons(String str) {
+      str = str.replace(";", "");
+      str = str.replace(":", "");
+      
+      return str;
+   }
+   
+   private String sanitize(String str) {
+      str = removeQuotes(str);
+      str = removeColons(str);
+      
+      return str;
+   }
+
    public synchronized void writeReport() {
       Connection conn = null;
       Statement stmt = null;
+      String page = "This is not a page";
       try {
          //STEP 2: Register JDBC driver
          Class.forName("com.mysql.jdbc.Driver");
@@ -84,40 +106,67 @@ public class Report {
          String sql;
 
          String header = "Domain Name";
-         String page = report.get(header);
+         page = report.get(header);
          report.remove(header);
 
 //         System.out.println("domain_name should be: " + page);
-         if (page == null)
+         if (page == null) {
+            System.out.println("<<<<<< Page is null");
             return;
+         }
 
 //         sql = "INSERT INTO domain(domain_name, crawl, created_on) "
 //               + "VALUES ('" + page + "', 1, SYSDATE())";
 //         stmt.executeUpdate(sql);
-         System.out.println("Creating select statement...");
+         System.out.println("updating info for "+ page);
 
-         sql = "SELECT id FROM domain WHERE domain_name='" + page + "'";
+         sql = "SELECT id FROM domain WHERE domain_name LIKE 'http%://" + page + "'";
          ResultSet rs = stmt.executeQuery(sql);
 
          rs.next();
-         int id = rs.getInt("id");
+         int id;
+         if(rs.getInt("id") != 0)
+            id = rs.getInt("id");
+         else {
+            System.out.println("* Null id");
+            return;
+         }
 
          Set<String> keys = report.keySet();
 
+         String val;
          for (String str : keys) {
-
+            if(str != null)
+               str = sanitize(str);
+            
+            val = report.get(str);
+            
+            if(val != null)
+               val = sanitize(val);
+            
+            
+            
             sql = "REPLACE INTO info(domain_id, header_field, value, created_on)"
-                  + "VALUES (" + id + ", " + str +", " + report.get(str) + 
-                  ", SYSDATE())";
+                  + "VALUES (" + id + ", '" + str +"', '" + val + 
+                  "', SYSDATE())";
+            System.out.println(sql);
             
             stmt.executeUpdate(sql);
          }
+         
+         sql = "UPDATE domain SET last_crawled_date=CURRENT_TIMESTAMP where id="
+                 + id;
+         
+         stmt.executeUpdate(sql);
 
          //STEP 6: Clean-up environment
          rs.close();
          stmt.close();
          conn.close();
       } catch (SQLException se) {
+         
+            System.out.println("* ERROR WITH PAGE: " + page);
+         
          //Handle errors for JDBC
          se.printStackTrace();
       } catch (Exception e) {

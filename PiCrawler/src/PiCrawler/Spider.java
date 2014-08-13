@@ -5,9 +5,14 @@
  */
 package PiCrawler;
 
+import static PiCrawler.Report.DB_URL;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -86,10 +91,17 @@ public class Spider {
          
 
       } catch (MalformedURLException ex) {
-         System.out.println("Heres the bad url : " + domainName);
-         Logger.getLogger(Spider.class.getName()).log(Level.SEVERE, null, ex);
+         
+         removeDomain(domainName);
+         System.out.println("<<<<<< MalformedURLException: " + domainName);
+         
+//         System.out.println("Heres the bad url : " + domainName);
+//         Logger.getLogger(Spider.class.getName()).log(Level.SEVERE, null, ex);
       } catch (IOException ex) {
-         Logger.getLogger(Spider.class.getName()).log(Level.SEVERE, null, ex);
+         
+         removeDomain(domainName);
+         System.out.println("<<<<<< IOException: " + domainName);
+//         Logger.getLogger(Spider.class.getName()).log(Level.SEVERE, null, ex);
       }
 
       System.out.println("");
@@ -112,6 +124,45 @@ public class Spider {
       return report;
    }
 
+   public void removeDomain(String domainName) {
+      Connection conn = null;
+      Statement stmt = null;
+      String page = "This is not a page";
+      try {
+               //STEP 2: Register JDBC driver
+         Class.forName("com.mysql.jdbc.Driver");
+
+         //STEP 3: Open a connection
+         System.out.println("Connecting to database...");
+         conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+         //STEP 4: Execute a query
+//         System.out.println("Creating insert statement...");
+         stmt = conn.createStatement();
+         String sql;
+         
+         sql = "UPDATE domain SET crawl=0 where domain_name='"
+                 + domainName + "'";
+         
+         stmt.executeUpdate(sql);
+         
+         
+         
+      } catch (ClassNotFoundException ex) {
+         Logger.getLogger(Spider.class.getName()).log(Level.SEVERE, null, ex);
+      } catch (SQLException ex) {
+         Logger.getLogger(Spider.class.getName()).log(Level.SEVERE, null, ex);
+      } 
+   }
+
+   // JDBC driver name and database URL
+   static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+   static final String DB_URL = "jdbc:mysql://localhost/OspreySecurity";
+
+   //  Database credentials
+   static final String USER = "OspreySecurity";
+   static final String PASS = "osprey";
+   
    private Report report;
    private final addSites adder;
    

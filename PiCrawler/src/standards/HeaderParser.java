@@ -6,6 +6,7 @@
 package standards;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -32,7 +33,15 @@ public class HeaderParser extends Standard {
          URLConnection conn = url.openConnection();
          Map<String, List<String>> map = conn.getHeaderFields();
          String value;
-
+         
+         InetAddress address = InetAddress.getByName(url.getHost());
+         
+         String ip = address.getHostAddress();
+         
+         result.add("IP Address");
+         result.add(ip);
+         
+         
 //         Set<String> set = map.keySet();
          for (Map.Entry<String, List<String>> entry : map.entrySet()) {
             result.add(entry.getKey());

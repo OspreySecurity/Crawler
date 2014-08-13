@@ -137,8 +137,12 @@ public class URLHandler {
     * @return
     */
    public String getNext() {
-      return URLs.poll().getURL();
-
+      if (peekNext() != null)
+         return URLs.poll().getURL();
+      
+      fill();
+      
+      return getNext();
    }
 
    /**

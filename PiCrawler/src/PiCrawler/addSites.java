@@ -5,10 +5,7 @@
  */
 package PiCrawler;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -57,6 +54,13 @@ public class addSites {
 
             System.out.println("* adding page: " + page);
 
+            sql = "SELECT id from domain where domain_name='" + page + "'";
+            
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            if(!rs.next())
+               continue;
+            
             sql = "INSERT INTO domain(domain_name, crawl, created_on) "
                   + "VALUES ('" + page + "', 1, SYSDATE())";
 
@@ -69,8 +73,10 @@ public class addSites {
 //            }
          }
 
-      } catch (ClassNotFoundException | SQLException ex) {
+      } catch (ClassNotFoundException ex) {
          Logger.getLogger(addSites.class.getName()).log(Level.SEVERE, null, ex);
+      } catch (SQLException ex) {
+         System.out.println("Already exists!");
       }
 
       System.out.println("");
@@ -93,6 +99,8 @@ public class addSites {
          linkHref = link.attr("href");
          if (linkHref.contains("http")) {
             parts = linkHref.split("/");
+            if (parts.length < 3)
+               continue;
             middle = "//";
             if (!linkHref.contains("www"))
                middle += "www.";
