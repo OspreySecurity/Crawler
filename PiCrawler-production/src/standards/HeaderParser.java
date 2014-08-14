@@ -10,7 +10,6 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -46,37 +45,22 @@ public class HeaderParser extends Standard {
          if (map.containsKey("Server")) {
             List<String> strList = map.get("Server");
 
-               System.out.println(strList);
-            
             if (strList.size() > 0) {
-
                String serverType = strList.get(0);
-               
+
                String[] list = serverType.split(" ");
-               
-               for(String str : list) {
-                  if(str.contains("(")) {
-                     String os = str.substring(1, str.length() -1);
-                     System.out.println("Operating system " + os);
+               for (String str : list)
+                  if (str.contains("(")) {
+                     String os = str.substring(1, str.length() - 1);
                      result.add("Operating System");
                      result.add(os);
                   } else if (str.contains("/")) {
                      String[] items = str.split("/");
-                     System.out.println(items[0]+ " Version");
-                     System.out.println(items[1]);
                      result.add(items[0] + " Version");
                      result.add(items[1]);
                   }
-               }
-
-               System.out.println("There is a server type!");
-//            System.out.println(server);
-               for (String str : strList)
-                  System.out.println(str);
             }
          }
-
-//         Set<String> set = map.keySet();
          for (Map.Entry<String, List<String>> entry : map.entrySet()) {
             result.add(entry.getKey());
             value = "";
@@ -84,11 +68,6 @@ public class HeaderParser extends Standard {
                value += str;
             result.add(value);
          }
-
-//         result.add(map);
-//         for (Map.Entry<String, List<String>> entry : map.entrySet())
-//            System.out.println("Key : " + entry.getKey()
-//                               + " ,Value : " + entry.getValue());
          return result;
       } catch (MalformedURLException ex) {
          Logger.getLogger(HeaderParser.class.getName()).log(Level.SEVERE, null,
@@ -99,5 +78,4 @@ public class HeaderParser extends Standard {
       }
       return null;
    }
-
 }

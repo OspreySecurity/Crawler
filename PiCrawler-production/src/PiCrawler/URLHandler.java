@@ -36,28 +36,13 @@ public class URLHandler {
    }
 
    public void fill() {
-      System.out.println("");
-      System.out.println("=============================================");
-      System.out.println("***** Stared Filling the Handler *****");
-      System.out.println("=============================================");
-      System.out.println("");
-
       getURLs();
-      
-
    }
 
    private void getURLs() {
       try {
-         //STEP 2: Register JDBC driver
          Class.forName("com.mysql.jdbc.Driver");
-
-         //STEP 3: Open a connection
-         System.out.println("Connecting to database...");
          Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-
-         //STEP 4: Execute a query
-         System.out.println("Creating insert statement...");
          Statement stmt = conn.createStatement();
          String sql;
 
@@ -65,102 +50,31 @@ public class URLHandler {
          = "SELECT domain_name, times_visited, last_crawled_date FROM domain WHERE crawl=1 ORDER BY last_crawled_date";
          ResultSet rs = stmt.executeQuery(sql);
 
-         while (rs.next()) {
+         while (rs.next())
             URLs.add(new Domain(rs.getString("domain_name"),
-                                       rs.getInt("times_visited"),
-                                       rs.getTimestamp("last_crawled_date")));
-         }
+                                rs.getInt("times_visited"),
+                                rs.getTimestamp("last_crawled_date")));
 
       } catch (ClassNotFoundException | SQLException ex) {
-         System.out.println("Couldn't open database");
       }
    }
-   
-   private void trim() {
-      
-   }
 
-   /**
-    *
-    */
-//   public void fillFromFile() {
-//      try {
-//         System.out.println("");
-//         System.out.println("=============================================");
-//         System.out.println("***** Stared Filling the Handler *****");
-//         System.out.println("=============================================");
-//         System.out.println("");
-//
-//         File file = new File(getClass().getResource("websites.txt").toURI());
-//         BufferedReader reader = new BufferedReader(new FileReader(file));
-//         String url = null;
-//         int errorCount = 0;
-//
-//         while (URLs.size() < size) {
-//            url = reader.readLine();
-//            if (url == null) {
-//               errorCount++;
-//
-//               if (errorCount > 10)
-//                  System.out.println(errorCount
-//                                     + " errors reading in URLs (URLHandler line:49)");
-//
-//               continue;
-//            }
-//
-//            System.out.println("* Added " + url + " to handler");
-//
-//            URLs.add(url);
-//         }
-//
-//      } catch (URISyntaxException ex) {
-//         Logger.getLogger(URLHandler.class.getName()).
-//                 log(Level.SEVERE, null, ex);
-//      } catch (FileNotFoundException ex) {
-//         Logger.getLogger(URLHandler.class.getName()).
-//                 log(Level.SEVERE, null, ex);
-//      } catch (IOException ex) {
-//         Logger.getLogger(URLHandler.class.getName()).
-//                 log(Level.SEVERE, null, ex);
-//      }
-//
-//      System.out.println("");
-//      System.out.println("=============================================");
-//      System.out.println("***** Finished Filling the Handler *****");
-//      System.out.println("=============================================");
-//      System.out.println("");
-//
-//   }
-
-   /**
-    *
-    * @return
-    */
    public String getNext() {
       if (peekNext() != null)
          return URLs.poll().getURL();
-      
+
       fill();
-      
       return getNext();
    }
 
-   /**
-    *
-    * @return
-    */
    public String peekNext() {
       if (URLs.size() > 0)
          return URLs.peek().getURL();
-      else 
+      else
          return null;
 
    }
 
-   /**
-    *
-    * @return URLs.size
-    */
    public int count() {
       return URLs.size();
    }
@@ -175,7 +89,7 @@ public class URLHandler {
 
    private final Queue<Domain> URLs;
 
-   private DomainComparor comparor;
+   private final DomainComparor comparor;
    private final int size;
 
 }

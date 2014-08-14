@@ -46,8 +46,6 @@ public class crawlerEngine {
       //It would be nice if we could stop this somehow
       while(true) {
          
-         System.out.println(">>>>> Reports size = " + reports.size());
-         
          site = handler.getNext();
          if(site == null) {
             handler.fill();
@@ -71,20 +69,12 @@ public class crawlerEngine {
    }
    
    private void report() {
-      System.out.println("");
-      System.out.println("=============================================");
-      System.out.println("***** Started Printing Reports *****");
-      System.out.println("=============================================");
-      System.out.println("");
-      
       for(Report report : reports) {
          report.writeReport();
-//         report.printReport();
       }
       
       System.out.println("");
       System.out.println("=============================================");
-      System.out.println("***** Finished Printing Reports *****");
       System.out.println("***** Total number of reports: " + totalReports + " *****");
       System.out.println("=============================================");
       System.out.println("");
@@ -104,7 +94,6 @@ public class crawlerEngine {
     */
    public static void main(String[] args) {
       crawlerEngine engine = new crawlerEngine();
-      System.out.println("started the crawler");
       engine.run();
    }
 

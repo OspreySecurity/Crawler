@@ -47,45 +47,24 @@ public class Report {
     * makes the report and prints it out for now. Later it will make changes to
     * the database
     */
-   public synchronized void printReport() {
-      String header = "Domain Name";
-      String page = report.get(header);
-      report.remove(header);
-      page = header + " : " + page;
-
-      Set<String> set = report.keySet();
-
-      System.out.println("=======================================");
-
-      System.out.println(page);
-
-      for (String str : set) {
-         System.out.print(str + " : ");
-         System.out.println(report.get(str));
-      }
-
-      System.out.println("=======================================");
-
-   }
-
    private String removeQuotes(String str) {
       str = str.replace("\"", "");
       str = str.replace("\'", "");
-      
+
       return str;
    }
-   
+
    private String removeColons(String str) {
       str = str.replace(";", "");
       str = str.replace(":", "");
-      
+
       return str;
    }
-   
+
    private String sanitize(String str) {
       str = removeQuotes(str);
       str = removeColons(str);
-      
+
       return str;
    }
 
@@ -98,7 +77,6 @@ public class Report {
          Class.forName("com.mysql.jdbc.Driver");
 
          //STEP 3: Open a connection
-         System.out.println("Connecting to database...");
          conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
          //STEP 4: Execute a query
@@ -111,53 +89,44 @@ public class Report {
          report.remove(header);
 
 //         System.out.println("domain_name should be: " + page);
-         if (page == null) {
-            System.out.println("<<<<<< Page is null");
+         if (page == null)
             return;
-         }
 
 //         sql = "INSERT INTO domain(domain_name, crawl, created_on) "
 //               + "VALUES ('" + page + "', 1, SYSDATE())";
 //         stmt.executeUpdate(sql);
-         System.out.println("updating info for "+ page);
-
-         sql = "SELECT id FROM domain WHERE domain_name LIKE 'http%://" + page + "'";
+         sql = "SELECT id FROM domain WHERE domain_name LIKE 'http%://" + page
+               + "'";
          ResultSet rs = stmt.executeQuery(sql);
 
          rs.next();
          int id;
-         if(rs.getInt("id") != 0)
+         if (rs.getInt("id") != 0)
             id = rs.getInt("id");
-         else {
-            System.out.println("* Null id");
+         else
             return;
-         }
 
          Set<String> keys = report.keySet();
 
          String val;
          for (String str : keys) {
-            if(str != null)
+            if (str != null)
                str = sanitize(str);
-            
+
             val = report.get(str);
-            
-            if(val != null)
+
+            if (val != null)
                val = sanitize(val);
-            
-            
-            
-            sql = "REPLACE INTO info(domain_id, header_field, value, created_on)"
-                  + "VALUES (" + id + ", '" + str +"', '" + val + 
-                  "', SYSDATE())";
-            System.out.println(sql);
-            
+
+            sql
+            = "REPLACE INTO info(domain_id, header_field, value, created_on)"
+              + "VALUES (" + id + ", '" + str + "', '" + val + "', SYSDATE())";
             stmt.executeUpdate(sql);
          }
-         
+
          sql = "UPDATE domain SET last_crawled_date=CURRENT_TIMESTAMP where id="
-                 + id;
-         
+               + id;
+
          stmt.executeUpdate(sql);
 
          //STEP 6: Clean-up environment
@@ -165,19 +134,11 @@ public class Report {
          stmt.close();
          conn.close();
       } catch (MysqlDataTruncation ex) {
-         
-         System.out.println("* ERROR WITH PAGE: " + page);
-         System.out.println("* Value column to long");
-         
+
       } catch (SQLException se) {
-         
-            System.out.println("* ERROR WITH PAGE: " + page);
-         
-         //Handle errors for JDBC
-         se.printStackTrace();
+
       } catch (Exception e) {
-         //Handle errors for Class.forName
-         e.printStackTrace();
+
       } finally {
          //finally block used to close resources
          try {
@@ -192,7 +153,6 @@ public class Report {
             se.printStackTrace();
          }//end finally try
       }//end try
-      System.out.println("Goodbye!");
    }
 
    /*
