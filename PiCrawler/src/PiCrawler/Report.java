@@ -5,6 +5,7 @@
  */
 package PiCrawler;
 
+import com.mysql.jdbc.MysqlDataTruncation;
 import java.sql.*;
 import java.util.*;
 
@@ -163,6 +164,11 @@ public class Report {
          rs.close();
          stmt.close();
          conn.close();
+      } catch (MysqlDataTruncation ex) {
+         
+         System.out.println("* ERROR WITH PAGE: " + page);
+         System.out.println("* Value column to long");
+         
       } catch (SQLException se) {
          
             System.out.println("* ERROR WITH PAGE: " + page);

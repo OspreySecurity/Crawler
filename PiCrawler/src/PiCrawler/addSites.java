@@ -49,21 +49,33 @@ public class addSites {
 
          for (String page : pages) {
 
-            if (page == null)
+            if (page == null) {
+               System.out.println("* " + page + " is null?");
                continue;
+            }
 
-            System.out.println("* adding page: " + page);
+            System.out.println("\n\n* adding page: " + page);
 
             sql = "SELECT id from domain where domain_name='" + page + "'";
             
+//            System.out.println(sql);
+            
             ResultSet rs = stmt.executeQuery(sql);
             
-            if(!rs.next())
+            Boolean bool = rs.next();
+            
+//            System.out.println("Is it already in database? " +  Boolean.toString(bool));
+            
+            if(bool) {
+               System.out.println("* " + page + " already in database");
                continue;
+            }
             
             sql = "INSERT INTO domain(domain_name, crawl, created_on) "
                   + "VALUES ('" + page + "', 1, SYSDATE())";
 
+//            System.out.println(sql);
+            
 //            try {
                stmt.executeUpdate(sql);
                System.out.println("* Wrote: " + page + " to the database");
@@ -74,7 +86,9 @@ public class addSites {
          }
 
       } catch (ClassNotFoundException ex) {
-         Logger.getLogger(addSites.class.getName()).log(Level.SEVERE, null, ex);
+         System.out.println("<<<<<< Class not found exception addSites");
+         ex.printStackTrace();
+//         Logger.getLogger(addSites.class.getName()).log(Level.SEVERE, null, ex);
       } catch (SQLException ex) {
          System.out.println("Already exists!");
       }

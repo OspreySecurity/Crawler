@@ -62,7 +62,7 @@ public class URLHandler {
          String sql;
 
          sql
-         = "SELECT domain_name, times_visited, last_crawled_date FROM domain WHERE crawl=1";
+         = "SELECT domain_name, times_visited, last_crawled_date FROM domain WHERE crawl=1 ORDER BY last_crawled_date";
          ResultSet rs = stmt.executeQuery(sql);
 
          while (rs.next()) {
@@ -150,7 +150,10 @@ public class URLHandler {
     * @return
     */
    public String peekNext() {
-      return URLs.peek().getURL();
+      if (URLs.size() > 0)
+         return URLs.peek().getURL();
+      else 
+         return null;
 
    }
 

@@ -102,6 +102,9 @@ public class Spider {
          removeDomain(domainName);
          System.out.println("<<<<<< IOException: " + domainName);
 //         Logger.getLogger(Spider.class.getName()).log(Level.SEVERE, null, ex);
+      } catch (IllegalArgumentException ex) {
+         removeDomain(domainName);
+         System.out.println("<<<<<< IllegalArgumentException: " + domainName);
       }
 
       System.out.println("");
