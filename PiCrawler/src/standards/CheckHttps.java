@@ -48,25 +48,11 @@ public class CheckHttps extends Standard {
    public double checkForHttps() {
       // Get Elements
       Elements src = this.DOM.getElementsByAttribute("src");
-      Elements href = this.DOM.getElementsByAttribute("href");
+      src.addAll(DOM.getElementsByAttribute("href"));
 
       // create arrays
       Boolean[] srcAry = new Boolean[src.size()];
-      Boolean[] hrefAry = new Boolean[href.size()];
       Integer count = 0;
-
-      // Get each elements HREF
-      for (Element link : href) {
-         String linkHref = link.attr("href");
-         String[] linkSplit = linkHref.split("://");
-         if (linkSplit.length > 1 && linkSplit[0].toLowerCase().equals("http"))
-            hrefAry[count++] = false;
-         else if (linkSplit.length > 1 && linkSplit[0].toLowerCase().equals(
-                 "https"))
-            hrefAry[count++] = true;
-         else
-            hrefAry[count++] = true;
-      }
 
       count = 0;
       // Get each elements HREF
@@ -84,13 +70,10 @@ public class CheckHttps extends Standard {
 
       // Count how many are http instead of https
       double isHttp = 0.0;
-      for (Boolean hrefAry1 : hrefAry)
-         if (hrefAry1 == false)
-            isHttp++;
       for (Boolean srcAry1 : srcAry)
          if (srcAry1 == false)
             isHttp++;
 
-      return formatDecimalScore(isHttp / (srcAry.length + hrefAry.length));
+      return formatDecimalScore(isHttp / srcAry.length);
    }
 }

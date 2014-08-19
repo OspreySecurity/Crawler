@@ -9,11 +9,14 @@ import static PiCrawler.Report.DB_URL;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jsoup.Jsoup;
@@ -36,7 +39,7 @@ public class Spider {
     */
    public Boolean crawl(String domainName) {
       report = new Report();
-      
+
       assert (domainName != null);
 
       System.out.println("");
@@ -46,19 +49,22 @@ public class Spider {
       System.out.println("");
 
       try {
+         //Try to get this down to a single connection
          Date pre = new Date();
          Document DOM = Jsoup.connect(domainName).timeout(10 * 1000).get();
          Date post = new Date();
+         System.out.println("* Connected via JSOUP");
+
+         URL url = new URL(domainName);
+         URLConnection conn = url.openConnection();
+         Map<String, List<String>> connFields = conn.getHeaderFields();
+         System.out.println("* Connected via URL");
          
          //Add new sites to database
          adder.write(DOM);
 
-         System.out.println("* Connected via JSOUP");
 
-         URL url = new URL(domainName);
-         url.openConnection();
-
-         System.out.println("* Connected via URL");
+         
 
          domainName = url.getHost();
 
@@ -70,7 +76,7 @@ public class Spider {
          report.add("Protocol", url.getProtocol());
 
          System.out.println("* Started test suite");
-         
+
          DomainHttps https = new DomainHttps(DOM);
          LoginForm login = new LoginForm(DOM);
          CheckHttps checkHttps = new CheckHttps(DOM);
@@ -82,23 +88,21 @@ public class Spider {
          report.add(https.test());
          report.add(checkHttps.test());
          report.add(checkPassUrl.test());
-         if (login.hasLoginForm())
+         if (login.hasLoginForm()){
             report.add(login.test());
-
-         report.add(parser.test());
-         
+         }
+         report.add(parser.test(connFields));
          System.out.println("* Finished test suite");
-         
 
       } catch (MalformedURLException ex) {
-         
+
          removeDomain(domainName);
          System.out.println("<<<<<< MalformedURLException: " + domainName);
-         
+
 //         System.out.println("Heres the bad url : " + domainName);
 //         Logger.getLogger(Spider.class.getName()).log(Level.SEVERE, null, ex);
       } catch (IOException ex) {
-         
+
          removeDomain(domainName);
          System.out.println("<<<<<< IOException: " + domainName);
 //         Logger.getLogger(Spider.class.getName()).log(Level.SEVERE, null, ex);
@@ -132,7 +136,7 @@ public class Spider {
       Statement stmt = null;
       String page = "This is not a page";
       try {
-               //STEP 2: Register JDBC driver
+         //STEP 2: Register JDBC driver
          Class.forName("com.mysql.jdbc.Driver");
 
          //STEP 3: Open a connection
@@ -143,19 +147,17 @@ public class Spider {
 //         System.out.println("Creating insert statement...");
          stmt = conn.createStatement();
          String sql;
-         
+
          sql = "UPDATE domain SET crawl=0 where domain_name='"
-                 + domainName + "'";
-         
+               + domainName + "'";
+
          stmt.executeUpdate(sql);
-         
-         
-         
+
       } catch (ClassNotFoundException ex) {
          Logger.getLogger(Spider.class.getName()).log(Level.SEVERE, null, ex);
       } catch (SQLException ex) {
          Logger.getLogger(Spider.class.getName()).log(Level.SEVERE, null, ex);
-      } 
+      }
    }
 
    // JDBC driver name and database URL
@@ -165,9 +167,8 @@ public class Spider {
    //  Database credentials
    static final String USER = "OspreySecurity";
    static final String PASS = "osprey";
-   
+
    private Report report;
    private final addSites adder;
-   
 
 }

@@ -21,21 +21,17 @@ import org.jsoup.select.Elements;
 public class addSites {
 
    public addSites() {
-
-   }
-
-   private void add(Set<String> pages) {
-//      Connection conn = null;
-//      Statement stmt = null;
-
+      sites = new HashSet<String>();
+      
       System.out.println("");
       System.out.println("=============================================");
-      System.out.println("***** Started Adding Sites *****");
+      System.out.println("***** Loading sites into addSites *****");
       System.out.println("=============================================");
       System.out.println("");
-
+      
       try {
-         //STEP 2: Register JDBC driver
+      
+      //STEP 2: Register JDBC driver
          Class.forName("com.mysql.jdbc.Driver");
 
          //STEP 3: Open a connection
@@ -45,59 +41,52 @@ public class addSites {
          //STEP 4: Execute a query
          System.out.println("Creating insert statement...");
          Statement stmt = conn.createStatement();
-         String sql;
-
-         for (String page : pages) {
-
-            if (page == null) {
-               System.out.println("* " + page + " is null?");
-               continue;
-            }
-
-            System.out.println("\n\n* adding page: " + page);
-
-            sql = "SELECT id from domain where domain_name='" + page + "'";
-            
-//            System.out.println(sql);
-            
-            ResultSet rs = stmt.executeQuery(sql);
-            
-            Boolean bool = rs.next();
-            
-//            System.out.println("Is it already in database? " +  Boolean.toString(bool));
-            
-            if(bool) {
-               System.out.println("* " + page + " already in database");
-               continue;
-            }
-            
-            sql = "INSERT INTO domain(domain_name, crawl, created_on) "
-                  + "VALUES ('" + page + "', 1, SYSDATE())";
-
-//            System.out.println(sql);
-            
-//            try {
-               stmt.executeUpdate(sql);
-               System.out.println("* Wrote: " + page + " to the database");
-               
-//            } catch (SQLException ex) {
-//               System.out.println("* Couldn't add " + page);
-//            }
+         String sql = "SELECT domain_name from domain";
+         ResultSet rs = stmt.executeQuery(sql);
+         
+         while(rs.next()) {
+            sites.add(rs.getString("domain_name"));
          }
-
-      } catch (ClassNotFoundException ex) {
-         System.out.println("<<<<<< Class not found exception addSites");
+      } catch (ClassNotFoundException | SQLException ex) {
          ex.printStackTrace();
-//         Logger.getLogger(addSites.class.getName()).log(Level.SEVERE, null, ex);
-      } catch (SQLException ex) {
-         System.out.println("Already exists!");
       }
 
-      System.out.println("");
-      System.out.println("=============================================");
-      System.out.println("***** Finished Adding Sites *****");
-      System.out.println("=============================================");
-      System.out.println("");
+   }
+
+   private void addSet(Set<String> pages) {
+      
+      for(String page : pages) {
+        if(!sites.contains(page)) {
+           if(!page.contains("redirect"))
+              addPage(page);
+        }
+      }
+   }
+   
+   private void addPage(String page) {
+      try {
+         
+      System.out.println("* Adding page " + page);
+      
+      
+      //STEP 2: Register JDBC driver
+         Class.forName("com.mysql.jdbc.Driver");
+
+         //STEP 3: Open a connection
+         System.out.println("Connecting to database...");
+         Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+         //STEP 4: Execute a query
+         System.out.println("Creating insert statement...");
+         Statement stmt = conn.createStatement();
+         String sql = "INSERT INTO domain(domain_name, crawl, created_on) "
+                  + "VALUES ('" + page + "', 1, SYSDATE())";
+         stmt.executeUpdate(sql);
+         
+         
+      } catch (ClassNotFoundException | SQLException ex) {
+         ex.printStackTrace();
+      }
    }
 
    public void write(Document doc) {
@@ -124,9 +113,11 @@ public class addSites {
          }
       }
 
-      add(newSites);
+      addSet(newSites);
 
    }
+   
+   private Set<String> sites;
 
    // JDBC driver name and database URL
    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";

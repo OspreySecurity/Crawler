@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -27,12 +25,11 @@ public class HeaderParser extends Standard {
       super(doc);
    }
 
-   @Override
-   public List<String> test() {
+      public List<String> test(Map<String, List<String>> connFields) {
       try {
          URL url = new URL(DOM.baseUri());
-         URLConnection conn = url.openConnection();
-         Map<String, List<String>> map = conn.getHeaderFields();
+//         URLConnection conn = url.openConnection();
+//         Map<String, List<String>> map = conn.getHeaderFields();
          String value;
 
          InetAddress address = InetAddress.getByName(url.getHost());
@@ -43,17 +40,12 @@ public class HeaderParser extends Standard {
          result.add(ip);
 
          // indexOf returns -1 if it doesn't exist
-         if (map.containsKey("Server")) {
-            List<String> strList = map.get("Server");
-
+         if (connFields.containsKey("Server")) {
+            List<String> strList = connFields.get("Server");
                System.out.println(strList);
-            
             if (strList.size() > 0) {
-
                String serverType = strList.get(0);
-               
                String[] list = serverType.split(" ");
-               
                for(String str : list) {
                   if(str.contains("(")) {
                      String os = str.substring(1, str.length() -1);
@@ -68,16 +60,13 @@ public class HeaderParser extends Standard {
                      result.add(items[1]);
                   }
                }
-
                System.out.println("There is a server type!");
-//            System.out.println(server);
                for (String str : strList)
                   System.out.println(str);
             }
          }
 
-//         Set<String> set = map.keySet();
-         for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+         for (Map.Entry<String, List<String>> entry : connFields.entrySet()) {
             result.add(entry.getKey());
             value = "";
             for (String str : entry.getValue())
@@ -98,6 +87,11 @@ public class HeaderParser extends Standard {
                                                             ex);
       }
       return null;
+   }
+
+   @Override
+   public List<String> test() {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
    }
 
 }
