@@ -6,12 +6,14 @@ of reports it sends them off to the main server and deletes any proprietary info
 keeping only the nessisary info for crawling.
 
 PiCrawler:
-  crawlerEngine - The "main" of the project. it controls all information, and
++---------------+-------------------------------------------------------------------
+| crawlerEngine | The "main" of the project. it controls all information, and
                   coordinates between the parts
-  Spider - downloads and parses the website
-  Report - generates report on the domain, and prepares it for the database
-  URLComparor - Compares two websites to determine where to place them in a
-                priority queue
-  URLHandler - Gets URLs from the database
-  addSites - Takes sites from webpages and if they aren't already in the
-             database then it adds them.
+| Spider        | downloads and parses the website
+| Report        | generates report on the domain, and prepares it for the database
+| URLComparor   | Compares two websites to determine where to place them in a
+                  priority queue
+| URLHandler    | Gets URLs from the database
+| addSites      | Takes sites from webpages and if they aren't already in the
+|               | database then it adds them.
++---------------+-------------------------------------------------------------------

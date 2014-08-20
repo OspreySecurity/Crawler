@@ -2,12 +2,14 @@ The standards package holds all test cases. Each test merely "runs and reports",
 since the Report class in PiCrawler takes care of calculating the score of each
 domain. 
 
-standards:
-  Standard - Base class
-  CSS - 
-  CheckHttps - 
-  CheckPassUrl - 
-  Cookies - 
-  DomainHttps - 
-  HeaderParser -
-  LoginForm -
+standards (max percent lost if failed):
++---------------+------------------------------------------------------------------+
+|  Standard     |  Base class
+|  CSS          | ... Does nothing ...
+|  CheckHttps   | Checks how many connections on the site lead to non https (2.00%)
+|  CheckPassUrl | Checks to see if the site passes passwords via GET (50.00%)
+|  Cookies      | ... Does nothing ...
+|  DomainHttps  | Checks if the connection is https, not if its on port 443 (5.00%)
+|  HeaderParser | Parses the headers to see what info is publicly available (50.00%)
+|  LoginForm    | ... I don't trust this ...
++---------------+-------------------------------------------------------------------
