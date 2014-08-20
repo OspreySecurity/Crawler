@@ -5,7 +5,6 @@
  */
 package PiCrawler;
 
-import static PiCrawler.Report.DB_URL;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,6 +38,7 @@ public class Spider {
     */
    public Boolean crawl(String domainName) {
       report = new Report();
+      float score = 100.00f;
 
       assert (domainName != null);
 
