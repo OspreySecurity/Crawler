@@ -4,7 +4,7 @@ domain.
 
 standards (max percent lost if failed):
 +---------------+------------------------------------------------------------------+
-|  Standard     |  Base class
+|  Standard     | Base class
 |  CSS          | ... Does nothing ...
 |  CheckHttps   | Checks how many connections on the site lead to non https (2.00%)
 |  CheckPassUrl | Checks to see if the site passes passwords via GET (50.00%)
